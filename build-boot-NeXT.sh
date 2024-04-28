@@ -11,7 +11,7 @@ if [ $# -le 1 ]; then
 	echo "Build and install bootsectors: $0 install $BOOT_FORMAT $DISK"
 fi
 
-SRC_REPO=https://github.com/freebsd/freebsd-src.git
+SRC_REPO=https://github.com/NetBSD/src.git
 SRCDIR=~/next/netbsd-src
 OBJDIR=~/next/netbsd-obj
 NEXT_AOUT=~/next/linux/arch/m68k/tools/next/aout
