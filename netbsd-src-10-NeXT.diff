@@ -1,0 +1,65 @@
+diff --git a/sys/arch/next68k/include/loadfile_machdep.h b/sys/arch/next68k/include/loadfile_machdep.h
+index 7a478aacf703..169093d95ceb 100644
+--- a/sys/arch/next68k/include/loadfile_machdep.h
++++ b/sys/arch/next68k/include/loadfile_machdep.h
+@@ -57,7 +57,7 @@
+ #define PROGRESS(a)		(void) printf a
+ #define ALLOC(a)		alloc(a)
+ #define DEALLOC(a, b)		dealloc(a, b)
+-#define OKMAGIC(a)		((a) == NMAGIC)
++#define OKMAGIC(a)		(((a) == NMAGIC) || ((a) == OMAGIC))
+ 
+ #else
+ 
+@@ -65,7 +65,7 @@
+ #define PROGRESS(a)		/* nothing */
+ #define ALLOC(a)		malloc(a)
+ #define DEALLOC(a, b)		free(a)
+-#define OKMAGIC(a)		((a) == NMAGIC)
++#define OKMAGIC(a)		(((a) == NMAGIC) || ((a) == OMAGIC))
+ 
+ #endif
+ 
+diff --git a/sys/arch/next68k/stand/boot/Makefile b/sys/arch/next68k/stand/boot/Makefile
+index 9f3b2cda3c66..e696b822ae3b 100644
+--- a/sys/arch/next68k/stand/boot/Makefile
++++ b/sys/arch/next68k/stand/boot/Makefile
+@@ -20,7 +20,8 @@ SAMISCMAKEFLAGS= SA_USE_LOADFILE=yes # SA_USE_CREAD=yes
+ .include "${S}/lib/libsa/Makefile.inc"
+ #LIBSA=          ${SALIB}
+ 
+-RELOC=	4380000
++#RELOC=	4380000
++RELOC=4000000
+ 
+ # XXX make defs arch-indep.
+ INCLUDES+=	-I${.OBJDIR} -I${S}/arch -I${S} -I${S}/lib/libsa
+@@ -73,7 +74,7 @@ ${PROG}: srt0.o ${OBJS} ${LIBS}
+ 	${LD} -N -Ttext ${RELOC} -e start srt0.o ${OBJS} ${LIBS} -o $@.elf
+ 	${SIZE} $@.elf
+ 	${OBJCOPY} -O binary $@.elf $@.raw
+-	(${SIZE} $@.elf | tail +2 | ${TOOL_AWK} ${AWKPROG} | \
++	(${SIZE} $@.elf | tail -n +2 | ${TOOL_AWK} ${AWKPROG} | \
+ 		xargs printf ; cat $@.raw) > $@
+ 
+ # startup
+diff --git a/sys/arch/next68k/stand/boot/conf.c b/sys/arch/next68k/stand/boot/conf.c
+index 550f02cdd24e..b7a263cf5a4a 100644
+--- a/sys/arch/next68k/stand/boot/conf.c
++++ b/sys/arch/next68k/stand/boot/conf.c
+@@ -40,6 +40,7 @@
+ #include <netinet/in_systm.h>
+ 
+ #include <lib/libsa/stand.h>
++#include <ext2fs.h>
+ #include <ufs.h>
+ #include <nfs.h>
+ #include <netif.h>
+@@ -72,6 +73,7 @@ int	ndevs = (sizeof(devsw)/sizeof(devsw[0]));
+  * Filesystem configuration
+  */
+ struct fs_ops file_system[] = {
++	FS_OPS(ext2fs),
+ 	FS_OPS(ufs),
+ 	FS_OPS(nfs),
+ };
