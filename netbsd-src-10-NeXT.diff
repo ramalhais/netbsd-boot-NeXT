@@ -52,7 +52,6 @@ index 550f02cdd24e..b7a263cf5a4a 100644
  
  #include <lib/libsa/stand.h>
 +#include <ext2fs.h>
-+#include <dosfs.h>
  #include <ufs.h>
  #include <nfs.h>
  #include <netif.h>
@@ -61,7 +60,6 @@ index 550f02cdd24e..b7a263cf5a4a 100644
   */
  struct fs_ops file_system[] = {
 +	FS_OPS(ext2fs),
-+	FS_OPS(dosfs),
  	FS_OPS(ufs),
  	FS_OPS(nfs),
  };
