@@ -12,6 +12,7 @@ if [ $# -le 1 ]; then
 fi
 
 SRC_REPO=https://github.com/NetBSD/src.git
+BRANCH=netbsd-10
 SRCDIR=~/next/netbsd-src
 OBJDIR=~/next/netbsd-obj
 NEXT_AOUT=~/next/linux/arch/m68k/tools/next/aout
@@ -25,11 +26,12 @@ BASEDIR=$(dirname $(readlink -f $0))
 cd $BASEDIR
 
 if [ ! -d $SRCDIR ]; then
-	git clone $SRC_REPO $SRCDIR
+	# git clone $SRC_REPO $SRCDIR
+	git clone --branch $BRANCH --single-branch --depth 1 $SRC_REPO $SRCDIR
 fi
 
 cd $SRCDIR
-git checkout netbsd-10
+git checkout $BRANCH
 git reset --hard
 cat $BASEDIR/netbsd-src-10-NeXT-ext2fs-dosfs.diff | patch -p1
 
@@ -37,7 +39,7 @@ cat $BASEDIR/netbsd-src-10-NeXT-ext2fs-dosfs.diff | patch -p1
 #$SRCDIR/build.sh -U -u -j${NPROCS} -O $OBJDIR -m next68k cleandir
 
 set +e
-TOOLDIR=$(basename $(dirname $(dirname $(find ~/next/netbsd-obj/ -iname m68k--netbsdelf-gcc))))
+TOOLDIR=$(basename $(dirname $(dirname $(find $OBJDIR -iname m68k--netbsdelf-gcc))))
 set -e
 
 if [ -z "$TOOLDIR" ]; then
