@@ -31,7 +31,7 @@ fi
 cd $SRCDIR
 git checkout netbsd-10
 git reset --hard
-cat $BASEDIR/netbsd-src-10-NeXT.diff | patch -p1
+cat $BASEDIR/netbsd-src-10-NeXT-ext2fs-dosfs.diff | patch -p1
 
 # Cleanup
 #$SRCDIR/build.sh -U -u -j${NPROCS} -O $OBJDIR -m next68k cleandir
